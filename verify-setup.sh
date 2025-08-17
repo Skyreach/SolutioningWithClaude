@@ -1,21 +1,27 @@
 #!/bin/bash
-# Verification script to ensure the system is properly set up
+# Verification script to ensure the Autonomous TDD Solution Architecture System is properly set up
 
-echo "🔍 Verifying Claude Full-Stack Development System Setup..."
+echo "🔍 Verifying Autonomous TDD Solution Architecture System..."
 echo "=================================================="
 
 # Check for required files
 echo "📁 Checking required files..."
 
 FILES=(
-    "MASTER_PROMPT.md"
+    "MASTER_PROMPT_V2.md"
     "CLAUDE.md"
-    "TDD_WORKFLOW.md"
+    "QUICK_START.md"
     "README.md"
+    "TDD_WORKFLOW.md"
+    ".claude/agents/solution-architect.md"
+    ".claude/agents/red-agent.md"
+    ".claude/agents/green-agent.md"
+    ".claude/hooks/autonomous-tdd.sh"
     ".claude/hooks/pre-implementation.sh"
     ".claude/hooks/verify-build.sh"
     ".claude/hooks/post-test.sh"
     ".claude/artifacts/current-state.json"
+    ".claude/mcp-tools/solution-selector.json"
     ".claude/mcp-tools/test-runner.json"
 )
 
@@ -35,6 +41,7 @@ echo ""
 echo "🔧 Checking hook permissions..."
 
 HOOKS=(
+    ".claude/hooks/autonomous-tdd.sh"
     ".claude/hooks/pre-implementation.sh"
     ".claude/hooks/verify-build.sh"
     ".claude/hooks/post-test.sh"
@@ -56,6 +63,7 @@ echo "📂 Checking directory structure..."
 
 DIRS=(
     ".claude"
+    ".claude/agents"
     ".claude/hooks"
     ".claude/artifacts"
     ".claude/artifacts/test-results"
@@ -79,9 +87,10 @@ if [ "$ALL_GOOD" = true ]; then
     echo "✅ System setup verified successfully!"
     echo ""
     echo "🚀 Next steps:"
-    echo "1. Start Claude with: 'Load MASTER_PROMPT.md and CLAUDE.md'"
-    echo "2. Begin with: 'Create initial project structure with failing test'"
-    echo "3. Follow verification points in the workflow"
+    echo "1. Start Claude with: 'Load MASTER_PROMPT_V2.md and CLAUDE.md'"
+    echo "2. Present your requirement to get 3 solution options"
+    echo "3. Select option 1, 2, or 3"
+    echo "4. Watch autonomous TDD implementation via Sonnet sub-agents"
 else
     echo "❌ Setup incomplete. Please fix the issues above."
     exit 1
@@ -89,10 +98,16 @@ fi
 
 echo ""
 echo "📚 Quick Reference:"
-echo "  - Development methodology: MASTER_PROMPT.md"
+echo "  - System prompt: MASTER_PROMPT_V2.md"
 echo "  - Project configuration: CLAUDE.md"
-echo "  - Testing guidelines: TDD_WORKFLOW.md"
-echo "  - Hook scripts: .claude/hooks/"
+echo "  - Usage examples: QUICK_START.md"
+echo "  - Agent definitions: .claude/agents/"
+echo "  - Automation hooks: .claude/hooks/"
 echo "  - Progress tracking: .claude/artifacts/"
 echo ""
-echo "Happy coding with Claude! 🤖"
+echo "🎯 Key Features:"
+echo "  - Always get exactly 3 solution options"
+echo "  - Autonomous TDD through specialized agents"
+echo "  - Continuous functional code between interactions"
+echo ""
+echo "Happy solutioning with Claude! 🤖"
