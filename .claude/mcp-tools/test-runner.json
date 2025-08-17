@@ -1,0 +1,67 @@
+{
+  "name": "test-runner",
+  "version": "1.0.0",
+  "description": "Automated test runner with intelligent sub-agent delegation",
+  "tools": [
+    {
+      "name": "run-tests",
+      "description": "Execute tests with optional category filtering",
+      "parameters": {
+        "category": {
+          "type": "string",
+          "description": "Test category to run (Unit, Integration, UI)",
+          "optional": true
+        },
+        "project": {
+          "type": "string", 
+          "description": "Specific project to test",
+          "optional": true
+        },
+        "verbose": {
+          "type": "boolean",
+          "description": "Enable verbose output",
+          "default": false
+        }
+      },
+      "command": "dotnet test {{#if project}}{{project}}{{/if}} {{#if category}}--filter \"Category={{category}}\"{{/if}} {{#if verbose}}--logger \"console;verbosity=detailed\"{{/if}}"
+    },
+    {
+      "name": "evaluate-tests",
+      "description": "Use Sonnet sub-agent to evaluate test quality and coverage",
+      "parameters": {
+        "testFile": {
+          "type": "string",
+          "description": "Path to test file to evaluate"
+        }
+      },
+      "delegate": {
+        "agent": "sonnet",
+        "prompt": "Evaluate this test file for: 1) Coverage completeness, 2) Edge cases handled, 3) Test quality (AAA pattern, clear assertions), 4) Missing test scenarios. Provide specific recommendations."
+      }
+    },
+    {
+      "name": "generate-test",
+      "description": "Generate test cases for a given implementation",
+      "parameters": {
+        "sourceFile": {
+          "type": "string",
+          "description": "Path to source file needing tests"
+        },
+        "framework": {
+          "type": "string",
+          "description": "Test framework to use",
+          "default": "NUnit"
+        }
+      },
+      "delegate": {
+        "agent": "sonnet",
+        "prompt": "Generate comprehensive {{framework}} test cases for this source file. Include: happy path, edge cases, error conditions, and boundary tests. Follow TDD best practices."
+      }
+    }
+  ],
+  "hooks": {
+    "beforeTest": ".claude/hooks/pre-implementation.sh",
+    "afterTest": ".claude/hooks/post-test.sh",
+    "onTestFailure": "echo '❌ Tests failed. Rolling back to last checkpoint...'"
+  }
+}
