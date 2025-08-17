@@ -1,169 +1,170 @@
-# CLAUDE.md - AI Assistant Configuration
+# CLAUDE.md
 
-## Project: AudioStreamer MAUI Application
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-### 🎯 Primary Objective
-Build a C# MAUI application with real-time audio streaming to OpenAI Whisper, maintaining 100% functional state between all interactions.
+## Project: Autonomous TDD Solution Architecture System
 
-### 📋 Current Sprint
-**Goal**: Set up project structure with basic audio capture
-**Status**: Not Started
-**Last Verified**: N/A
+This repository implements a collaborative solution design system with autonomous Test-Driven Development execution through specialized sub-agents.
 
-### ✅ Verification Checklist
-Before ANY code changes:
-- [ ] Run existing tests: `dotnet test`
-- [ ] Check build status: `dotnet build`
-- [ ] Verify Android target: `dotnet build -f net8.0-android`
+## Core Workflow
 
-After EVERY change:
-- [ ] Tests still pass
-- [ ] Application builds
-- [ ] No regression in existing features
+1. **Present 3 Solutions**: For every requirement, present exactly 3 architectural options
+2. **User Selection**: Wait for user to select option 1, 2, or 3
+3. **Autonomous TDD**: Execute Red→Green→Refactor cycle via Sonnet sub-agents
+4. **Maintain Functional State**: Ensure all tests pass between interactions
 
-### 🏗️ Architecture Decisions
-| Component | Decision | Rationale | Verified |
-|-----------|----------|-----------|----------|
-| Audio Capture | MediaRecorder API | Native Android support | ❌ |
-| Streaming | WebSocket | Low latency | ❌ |
-| Whisper Integration | Python CLI | Simplest to start | ❌ |
-| Testing Framework | NUnit | Familiar to .NET devs | ❌ |
+## Common Commands
 
-### 🧪 Test Strategy
-```
-1. Unit Tests (AudioStreamer.Tests)
-   - Business logic isolation
-   - Mock external dependencies
-   - Run on every change
-
-2. Integration Tests (AudioStreamer.Tests.Integration)
-   - API communication
-   - Whisper CLI interaction
-   - Run before commits
-
-3. UI Tests (AudioStreamer.Tests.UI)
-   - MAUI test framework
-   - Critical path only
-   - Run before release
-```
-
-### 🚀 Commands Reference
+### Testing
 ```bash
-# Development
-dotnet watch run -f net8.0-windows10.0.19041.0  # Windows UI testing
-dotnet build -f net8.0-android                   # Android build check
+# Run all tests
+dotnet test
 
-# Testing
-dotnet test                                       # All tests
-dotnet test --filter "Category=Unit"            # Unit tests only
-dotnet test --logger "console;verbosity=detailed" # Verbose output
+# Run specific test category
+dotnet test --filter "Category=Unit"
+dotnet test --filter "Category=Integration"
+dotnet test --filter "Category=E2E"
 
-# Deployment
-dotnet publish -f net8.0-android -c Release     # Android APK
+# Run with coverage
+dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+
+# Run single test
+dotnet test --filter "FullyQualifiedName~TestClassName.TestMethodName"
+
+# Verbose test output
+dotnet test --logger "console;verbosity=detailed"
 ```
 
-### 📁 Project Structure
+### Building
+```bash
+# Build solution
+dotnet build
+
+# Build for specific platform (MAUI)
+dotnet build -f net8.0-android
+dotnet build -f net8.0-windows10.0.19041.0
+
+# Release build
+dotnet build -c Release
+
+# Publish Android APK
+dotnet publish -f net8.0-android -c Release
 ```
-AudioStreamer/
-├── AudioStreamer.Core/          # Business logic
-│   ├── Services/
-│   │   ├── IAudioCapture.cs
-│   │   ├── IStreamingService.cs
-│   │   └── IWhisperService.cs
-│   └── Models/
-│       └── AudioChunk.cs
-├── AudioStreamer.MAUI/          # UI Layer
-│   ├── Platforms/Android/      # Android-specific
-│   ├── Platforms/Windows/      # Windows-specific
-│   └── ViewModels/
-├── AudioStreamer.API/           # Backend API
-│   └── Controllers/
-│       └── AudioController.cs
-└── AudioStreamer.Tests/         # Test projects
+
+### Development
+```bash
+# Watch mode for auto-rebuild
+dotnet watch run -f net8.0-windows10.0.19041.0
+
+# Create new projects
+dotnet new sln -n ProjectName
+dotnet new maui -n ProjectName.MAUI
+dotnet new classlib -n ProjectName.Core
+dotnet new webapi -n ProjectName.API
+dotnet new nunit -n ProjectName.Tests
+
+# Add project references
+dotnet add ProjectName.Tests reference ProjectName.Core
+dotnet sln add ProjectName.Core/ProjectName.Core.csproj
+```
+
+### Automation Hooks
+```bash
+# Run autonomous TDD cycle
+./.claude/hooks/autonomous-tdd.sh
+
+# Pre-implementation checks
+./.claude/hooks/pre-implementation.sh
+
+# Verify build status
+./.claude/hooks/verify-build.sh
+
+# Update test artifacts
+./.claude/hooks/post-test.sh
+```
+
+## Architecture
+
+### Solution Selection System
+The system uses a three-option decision framework where every technical decision is presented as exactly 3 choices:
+- **Option 1**: Conservative/Simple approach
+- **Option 2**: Balanced/Recommended approach
+- **Option 3**: Advanced/Complex approach
+
+Implementation happens through specialized sub-agents defined in `.claude/agents/`:
+- **solution-architect.md**: Presents 3 solutions for requirements
+- **red-agent.md**: Creates comprehensive failing tests
+- **green-agent.md**: Implements minimal code to pass tests
+- **refactor-agent.md**: Improves code quality while maintaining tests
+
+### TDD Automation Flow
+```
+User Requirement 
+  → Solution Architect (3 options)
+  → User Selection
+  → Red Agent (Sonnet): Create failing tests
+  → Green Agent (Sonnet): Minimal implementation
+  → Refactor Agent (Sonnet): Code improvement
+  → Integration Agent (Sonnet): System verification
+  → User Review
+```
+
+### Project Structure Pattern
+For full-stack applications:
+```
+ProjectName/
+├── ProjectName.Core/        # Business logic (testable, no UI)
+├── ProjectName.API/         # Backend services
+├── ProjectName.MAUI/        # Mobile/Desktop UI
+├── ProjectName.Web/         # Web frontend (if applicable)
+└── ProjectName.Tests/       # All test projects
     ├── Unit/
     ├── Integration/
-    └── UI/
+    └── E2E/
 ```
 
-### 🔄 Current Working Context
-```csharp
-// Last working code location
-File: None
-Method: None
-Test: None
+### MCP Tool Configuration
+The `.claude/mcp-tools/` directory contains tool orchestration:
+- **solution-selector.json**: Manages sub-agent delegation for TDD phases
+- **test-runner.json**: Automated test execution with category filtering
 
-// Current task
-Task: Initial project setup
-Step: Create solution structure
-Command to run next: dotnet new sln -n AudioStreamer
+## Current Context
+
+### AudioStreamer MAUI Application
+Target: Real-time audio streaming to OpenAI Whisper
+- **Platform Priority**: Android primary, Windows for testing
+- **Architecture Decision**: WebSocket streaming with chunked audio
+- **Test Framework**: NUnit with Moq for mocking
+- **Coverage Target**: Minimum 80% for unit tests
+
+### Next Implementation Steps
+1. Create initial solution structure
+2. Implement audio capture service with tests
+3. Add WebSocket streaming layer
+4. Integrate Whisper Python wrapper
+5. Build MAUI UI with live transcription display
+
+## Key Principles
+
+When implementing features:
+1. Always start with failing tests (Red phase)
+2. Write minimal code to pass (Green phase)
+3. Refactor only with passing tests (Refactor phase)
+4. Delegate test creation and implementation to Sonnet sub-agents
+5. Maintain checkpoint artifacts in `.claude/artifacts/`
+6. Never proceed with failing tests
+7. Present 3 solutions for architectural decisions
+
+## Sub-Agent Delegation
+
+Use the Task tool to delegate to Sonnet with appropriate agent prompts:
+```markdown
+Task: Create comprehensive tests for [feature]
+Agent: Sonnet
+System Prompt: .claude/agents/red-agent.md
 ```
 
-### 🐛 Known Issues
-| Issue | Workaround | Fix Status |
-|-------|------------|------------|
-| None yet | - | - |
-
-### 📊 Progress Tracking
-```json
-{
-  "milestones": [
-    {"id": 1, "name": "Project Setup", "status": "pending"},
-    {"id": 2, "name": "Audio Capture", "status": "pending"},
-    {"id": 3, "name": "Streaming Implementation", "status": "pending"},
-    {"id": 4, "name": "Whisper Integration", "status": "pending"},
-    {"id": 5, "name": "UI Implementation", "status": "pending"}
-  ]
-}
-```
-
-### 🔐 Security Considerations
-- No API keys in source code
-- Use environment variables for sensitive data
-- Implement proper audio permissions handling
-- Sanitize all user inputs
-
-### 🎨 UI/UX Guidelines
-- Material Design 3 for Android
-- Fluent Design for Windows
-- Accessibility: WCAG 2.1 AA compliance
-- Responsive layout for different screen sizes
-
-### 🚦 Git Workflow
-```bash
-# Feature branch
-git checkout -b feature/audio-capture
-
-# After tests pass
-git add .
-git commit -m "feat: implement audio capture with tests"
-
-# Never commit if tests fail!
-```
-
-### 📝 User Verification Points
-1. **After project creation**: Can you build the solution?
-2. **After test setup**: Do all initial tests pass?
-3. **After audio implementation**: Does microphone permission request work?
-4. **After streaming setup**: Can you see WebSocket connection established?
-5. **After Whisper integration**: Does transcription return text?
-
-### 🤖 AI Assistant Reminders
-- **NEVER** proceed without passing tests
-- **ALWAYS** ask for verification at milestones
-- **CREATE** minimal reproducible examples for issues
-- **MAINTAIN** this file with current state
-- **ROLLBACK** immediately if build breaks
-
-### 📅 Session History
-| Date | Achievement | Tests | Build | Verified |
-|------|-------------|-------|-------|----------|
-| [Date] | Created project structure | N/A | N/A | ⏳ |
-
-### 💡 Next Actions
-1. Create solution and project structure
-2. Set up initial test project with smoke test
-3. Verify build for both Windows and Android targets
-4. Get user confirmation before proceeding
-
----
-**Remember**: Every line of code must have a purpose, a test, and user verification.
+Progress tracking occurs in:
+- `.claude/artifacts/current-state.json`: Overall project state
+- `.claude/artifacts/tdd-checkpoint.json`: TDD cycle progress
+- `.claude/artifacts/test-results/`: Historical test execution

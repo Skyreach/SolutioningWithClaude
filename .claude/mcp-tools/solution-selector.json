@@ -1,0 +1,162 @@
+{
+  "name": "solution-selector",
+  "version": "2.0.0",
+  "description": "Collaborative solution design with autonomous TDD implementation",
+  "tools": [
+    {
+      "name": "present-solutions",
+      "description": "Present three solution options for a requirement",
+      "parameters": {
+        "requirement": {
+          "type": "string",
+          "description": "The user's requirement or feature request"
+        },
+        "constraints": {
+          "type": "object",
+          "description": "Any constraints (budget, timeline, tech stack)",
+          "optional": true
+        }
+      },
+      "delegate": {
+        "agent": "solution-architect",
+        "prompt": "Analyze this requirement and present EXACTLY 3 solution options following the template in solution-architect.md. Ensure clear differentiation and include a comparison matrix."
+      }
+    },
+    {
+      "name": "execute-tdd-red",
+      "description": "Create comprehensive failing tests",
+      "parameters": {
+        "requirements": {
+          "type": "string",
+          "description": "Feature requirements and acceptance criteria"
+        },
+        "solution": {
+          "type": "number",
+          "description": "Selected solution number (1, 2, or 3)"
+        },
+        "testFramework": {
+          "type": "string",
+          "description": "Test framework to use",
+          "default": "NUnit"
+        }
+      },
+      "delegate": {
+        "agent": "sonnet",
+        "systemPrompt": ".claude/agents/red-agent.md",
+        "prompt": "Acting as a TDD Red Agent, create comprehensive failing tests for these requirements. Include unit, integration, and E2E tests as appropriate. Follow the patterns in red-agent.md."
+      }
+    },
+    {
+      "name": "execute-tdd-green",
+      "description": "Implement minimal code to pass tests",
+      "parameters": {
+        "failingTests": {
+          "type": "string",
+          "description": "The failing test files and error messages"
+        },
+        "existingCode": {
+          "type": "string",
+          "description": "Current codebase context",
+          "optional": true
+        }
+      },
+      "delegate": {
+        "agent": "sonnet",
+        "systemPrompt": ".claude/agents/green-agent.md",
+        "prompt": "Acting as a TDD Green Agent, write the MINIMUM code required to make these tests pass. Do not optimize or add extra features. Follow the patterns in green-agent.md."
+      }
+    },
+    {
+      "name": "execute-tdd-refactor",
+      "description": "Refactor code while maintaining test passage",
+      "parameters": {
+        "passingCode": {
+          "type": "string",
+          "description": "Current implementation with passing tests"
+        },
+        "codeSmells": {
+          "type": "array",
+          "description": "Identified areas for improvement",
+          "optional": true
+        }
+      },
+      "delegate": {
+        "agent": "sonnet",
+        "systemPrompt": ".claude/agents/refactor-agent.md",
+        "prompt": "Acting as a TDD Refactor Agent, improve this code's quality while ensuring all tests continue to pass. Apply SOLID principles, remove duplication, and improve naming."
+      }
+    },
+    {
+      "name": "verify-integration",
+      "description": "Verify system-wide integration",
+      "parameters": {
+        "components": {
+          "type": "array",
+          "description": "Components to verify integration"
+        }
+      },
+      "delegate": {
+        "agent": "sonnet",
+        "prompt": "Verify that all components work together correctly. Run integration tests, check API contracts, verify database migrations, and ensure deployment readiness."
+      }
+    },
+    {
+      "name": "generate-documentation",
+      "description": "Auto-generate documentation from implementation",
+      "parameters": {
+        "codeFiles": {
+          "type": "array",
+          "description": "Files to document"
+        },
+        "docType": {
+          "type": "string",
+          "description": "Type of documentation (API, User, Developer)",
+          "default": "API"
+        }
+      },
+      "delegate": {
+        "agent": "sonnet",
+        "prompt": "Generate comprehensive {{docType}} documentation for these code files. Include examples, parameter descriptions, and usage patterns."
+      }
+    }
+  ],
+  "workflows": [
+    {
+      "name": "complete-tdd-cycle",
+      "description": "Execute full autonomous TDD cycle",
+      "steps": [
+        {
+          "tool": "execute-tdd-red",
+          "output": "failingTests"
+        },
+        {
+          "tool": "execute-tdd-green",
+          "input": "failingTests",
+          "output": "passingCode"
+        },
+        {
+          "tool": "execute-tdd-refactor",
+          "input": "passingCode",
+          "output": "refactoredCode"
+        },
+        {
+          "tool": "verify-integration",
+          "input": "refactoredCode",
+          "output": "verificationReport"
+        }
+      ],
+      "hooks": {
+        "before": ".claude/hooks/pre-implementation.sh",
+        "after": ".claude/hooks/autonomous-tdd.sh",
+        "onError": "echo 'TDD cycle failed. Check logs for details.'"
+      }
+    }
+  ],
+  "settings": {
+    "parallelExecution": true,
+    "maxConcurrentAgents": 3,
+    "timeoutSeconds": 300,
+    "retryOnFailure": true,
+    "preserveContext": true
+  }
+}
